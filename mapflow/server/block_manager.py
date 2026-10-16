@@ -543,7 +543,12 @@ class BlockManager:
         self.data_blocks = torch.zeros(
             (max_num_blocks, block_size, block_size),
             dtype=dtype,
-            device=f"cuda:{tp_size}",
+            # The paper's launcher reserves cuda:tp_size for the block pool,
+            # i.e. a second GPU when tp_size=1.  A same-device functional
+            # validation run can override this without changing the default
+            # paper path; it is useful on PCIe-only hosts where CUDA P2P is
+            # unavailable.
+            device=os.environ.get("MAPFLOW_SERVER_BLOCK_DEVICE", f"cuda:{tp_size}"),
             # pin_memory=True
         )
 

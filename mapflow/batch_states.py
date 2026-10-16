@@ -582,4 +582,11 @@ class BatchState:
 
     @property
     def decode_only(self) -> bool:
+        # vLLM may invoke the attention backend during its startup/profile
+        # pass before it has published a scheduler batch.  In that state the
+        # layout is empty; treating it as a non-decode pass lets the backend
+        # complete initialization while preserving the original behavior for
+        # real batches (where a singleton-token layout is decode-only).
+        if not self.current_batch_layout:
+            return False
         return max(num_tokens for _, num_tokens in self.current_batch_layout) == 1

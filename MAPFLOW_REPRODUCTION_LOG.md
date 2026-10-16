@@ -268,16 +268,76 @@ score.  A host with A800-class peer access, or a separately implemented and
 explicitly labeled host-staging backend, is required for the paper's actual
 end-to-end test.
 
-The BSR selector and MapFlow Python implementation were reached before this
-failure.  Triton kernel *selection* was therefore verified, but the actual
-BSR Triton launch/compilation was not reached in a valid sender/cache/receiver
-run.  It must remain an open gate rather than being inferred from a Python
-import.
+For this distinct-GPU attempt, the BSR selector and MapFlow Python
+implementation were reached before the CUDA-IPC failure.  Its actual BSR
+Triton launch was not reached because registration failed first.  The
+same-device validation below is a separate hardware-deviation run; it does
+reach the receiver's `bsr_varlen_page_triton` call and completes a request.
 
 The exact attempted gate used the paper pair Ministral3-8B→Ministral3-3B,
 `top_p=0.7`, sender layers 34, receiver layers 26, block size 64, and the
 paper's `hotpotqa` weights.  The attempt stopped before any dataset example
 was scored.
+
+### 5.1 Same-device functional validation (hardware-deviation, 2026-10-16)
+
+Because all eight RTX 4090s report no CUDA peer access, I also ran a separate
+functional validation by placing cache server, sender, and receiver on the
+same physical GPU (GPU 1).  This is **not** the paper's multi-GPU/A800
+experiment and is not used as a paper system-performance result.  The source
+default remains unchanged: `MAPFLOW_SERVER_BLOCK_DEVICE` is only an explicit
+validation override.
+
+The run used the paper pair Ministral3-8B→Ministral3-3B, the paper's
+`hotpotqa` mapper directory, 34→26 layers, 32→32 heads, `top_p=0.7`, block
+size 64, and the BSR backend.  The necessary host-only workarounds were:
+
+```text
+CUDA_VISIBLE_DEVICES=1
+MAPFLOW_SERVER_BLOCK_DEVICE=cuda:0
+MAPFLOW_IPC_BUFFER_SIZE=10000       # paper default is 3,096,000
+--max_num_blocks 10000              # enough for this short request
+--max-model-len 512                 # short functional gate, not paper length
+--enforce-eager --no-async-scheduling
+sender --cpu-offload-gb 8
+receiver --cpu-offload-gb 4
+```
+
+The first same-device attempt with only 10 or 1,000 cache blocks exposed a
+test-capacity issue (`Requested 704` and later `Requested 1,119` blocks).  It
+was rerun with 10,000 blocks; the cache server then reported actual stores of
+704, 955, and 1,119-block batches and successful prefix retrievals.  The
+sender and receiver both registered, the BSR path was selected, the
+receiver's `bsr_varlen_page_triton` kernel was compiled/launched, and a
+HotpotQA sample generated `yes` for the gold answer `yes`.  This establishes
+that the public MapFlow data path and its BSR attention kernel can function on
+this host when all CUDA IPC objects are on one device; it does not remove the
+no-P2P limitation for the paper topology.
+
+For the first nine valid examples produced by the repository preprocessing
+with `max_length=512` (the source file contains 1,000 examples, but only nine
+survive this deliberately short gate), I ran a native Ministral3-3B service
+on GPU 2 with the same receiver prompts.  Under greedy decoding
+(`temperature=0`, `top_p=1`, `max_tokens=32`):
+
+| run | n | MapFlow EM/F1 | native 3B EM/F1 | delta |
+|---|---:|---:|---:|---:|
+| same-device functional gate | 9 | 0.667 / 0.667 | 0.778 / 0.778 | -0.111 |
+
+The non-greedy default-sampling check gave 0.556 vs. 0.667, also -0.111, so
+the observed difference is not solely a random-sampling artifact.  These are
+diagnostic short-context numbers only: they are not comparable to the paper's
+1,000-example, long-context accuracy table.  Full paper accuracy still
+requires P2P-capable hardware and the official `max_model_len`/generation
+settings.
+
+During startup, the current vLLM overlay called `BatchState.decode_only` with
+an empty profiling layout.  The reproduction branch now handles that empty
+profile state as non-decode; real singleton-token decode batches retain the
+original behavior.  The copied runtime also needed a one-line compatibility
+shim allowing the unmodified FlashAttention constructor to accept the
+overlay's `layer_idx` keyword for the native baseline; this shim is confined
+to the copied environment and is not a MapFlow algorithm change.
 
 ## 6. Accuracy experiments (paper test split)
 
@@ -344,7 +404,8 @@ hardware-dependent difference is reported with the raw logs and percentiles.
 - [x] independent MapFlow environment imports and normal vLLM smoke server starts;
 - [ ] Qwen3-1.7B acquired and verified;
 - [x] BSR backend is selected (no fallback); CUDA-IPC registration is blocked by no P2P;
-- [ ] BSR Triton kernel launch/compilation on a valid MapFlow cache run;
+- [x] same-device BSR functional gate reaches sender/cache/receiver registration and scores a short HotpotQA gate (explicitly hardware-deviation);
+- [x] BSR Triton kernel launch/compilation on a valid **same-device functional** MapFlow cache run (paper multi-GPU topology remains blocked by no P2P);
 - [ ] all four pair × accuracy datasets run with n=1,000 paper test examples;
 - [ ] RULER-20K file resolved and four long-context rows run;
 - [ ] TTFT and routing traces run and extracted;
