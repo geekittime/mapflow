@@ -212,6 +212,12 @@ expected size/hash checks.  Model weights are never committed to git.  The
 launcher expects ignored symlinks under `examples/models/`; the exact links
 and checksums are printed by `reproduction/prepare_models.sh` before serving.
 
+The new `reproduction/audit_models.py` gate was run after this discovery.  It
+passes the five complete local snapshots and fails Qwen3-1.7B explicitly for
+the missing first shard and the retained `.corrupt` artifact.  No Qwen3-1.7B
+server or Qwen3-8B→Qwen3-1.7B result is accepted until this gate reports
+`MODEL_AUDIT PASS`.
+
 Setup caveat: one early shell command resolved the bare `pip` executable to
 `/home/wby/miniconda3/bin/pip` instead of the copied environment and installed
 the requested Transformers/OpenCV packages there.  No MapFlow server or

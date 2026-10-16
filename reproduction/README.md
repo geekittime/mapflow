@@ -15,6 +15,7 @@ cd /home/wby/mapflow
 python reproduction/audit_source.py
 python reproduction/verify_sparse_math.py
 python reproduction/hardware_audit.py
+/home/wby/.venvs/mapflow-repro312/bin/python reproduction/audit_models.py
 ```
 
 The checks above do not claim that a GPU run succeeded.  They only verify the
@@ -22,6 +23,10 @@ source provenance, dataset/weight inventory, layer/head configuration, and the
 mathematical invariants of block top-p compression.  GPU accuracy and latency
 commands are recorded in the main log and must be run in the separate
 `mapflow-repro312` environment.
+
+`audit_models.py` is the stricter model-artifact gate: it checks the nested
+text configuration, every safetensors shard referenced by the index, and
+opens each shard before a model is linked into `examples/models/`.
 
 The public implementation uses CUDA IPC for sender/cache/receiver buffers.  A
 multi-GPU run therefore requires peer access between the participating GPUs.
