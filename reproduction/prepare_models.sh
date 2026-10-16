@@ -27,7 +27,11 @@ if index.is_file():
     missing = [name for name in shards if not (root / name).is_file()]
     if missing:
         raise SystemExit(f"incomplete safetensors checkout {root}: {missing}")
-    partial = sorted(root.glob("*.safetensors.part"))
+    partial = sorted(
+        path.name
+        for path in root.iterdir()
+        if path.name.endswith((".safetensors.part", ".safetensors.incomplete", ".safetensors.corrupt"))
+    )
     if partial:
         raise SystemExit(f"partial safetensors files remain in {root}: {partial}")
 PY
