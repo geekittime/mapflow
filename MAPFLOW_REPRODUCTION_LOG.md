@@ -162,6 +162,19 @@ Two artifact-level gaps are important for interpreting “complete reproduction�
    1000` selects 1,000 valid transitions, but this is not evidence that the
    public file is the paper's exact LMSYS/ShareGPT4 test split.
 
+As an additional artifact check, every released translator file was opened and
+checked for finite values; after the runtime `softmax(W, dim=0)`, every column
+sum was one within `1e-5` (470 files checked, including the bundled extra
+non-paper pair).  The saved optimizer states expose the following final step
+counts, but not the missing data/seed/checkpoint semantics:
+
+| pair | HotpotQA | conversation | Multi-News | RULER |
+|---|---:|---:|---:|---:|
+| Qwen3-8B→1.7B | 10,650 | 6,010 | 10,930 | 170 |
+| Qwen3-14B→8B | 11,060 | 940 | 1,960 | 47 |
+| Ministral3-8B→3B | 3,200 | 2,150 | 11,690 | 100 |
+| Ministral3-14B→8B | 3,800 | 9,150 | 3,460 | 10 |
+
 The effective local evaluator distributions were also measured with the
 tokenizer and `max_length` values in the public launchers (length includes
 context, append, and answer tokens): HotpotQA `n=1000`, min/max/mean
@@ -208,7 +221,12 @@ was initially absent.  The second shard has since been acquired and verified
 `912becff8d60672aa8628ef08c05898d9adf17c2ad4ae3caf99b065622fdeff9`).  The
 first shard is being reacquired from the official Qwen repository and the
 pair remains unchecked until both shards pass safetensors opening and the
-expected size/hash checks.  Model weights are never committed to git.  The
+expected size/hash checks.  A resumable range download was attempted on
+16 October, but the current proxy delivered only about 0.08 MB/s aggregate
+(eight 8-MiB chunks completed in roughly 800 seconds with 16 workers).  It was
+stopped to avoid tying up the host for many hours; the partial chunks remain
+under `.range_chunks_first_v1/` and are recoverable.  Model weights are never
+committed to git.  The
 launcher expects ignored symlinks under `examples/models/`; the exact links
 and checksums are printed by `reproduction/prepare_models.sh` before serving.
 
@@ -353,6 +371,60 @@ shim allowing the unmodified FlashAttention constructor to accept the
 overlay's `layer_idx` keyword for the native baseline; this shim is confined
 to the copied environment and is not a MapFlow algorithm change.
 
+### 5.2 Native receiver baseline and evaluator-call audit (2026-10-16)
+
+I reran a complete native Ministral3-3B HotpotQA baseline after the short
+functional gate, because the first attempt had returned HTTP 502 before any
+sample was scored.  The 502 was an environment error: this host exports
+`HTTP_PROXY/HTTPS_PROXY=http://127.0.0.1:28117`, and the local vLLM requests
+were sent through that proxy because `NO_PROXY` was unset.  The corrected run
+explicitly removed the proxy variables and set
+`NO_PROXY=127.0.0.1,localhost`.  The server then returned HTTP 200 for both
+`/v1/models` and `/v1/chat/completions`.
+
+There was a second, non-model failure in the first rerun.  The evaluator sends
+the literal `--send_model` and `--receive_model` strings as OpenAI API model
+IDs.  A manually started server advertised `native3b`, while the evaluator
+sent `/home/wby/mapflow/examples/models/Ministral3-3B`, producing HTTP 404.
+The official launcher starts vLLM without `--served-model-name`, so its
+default model ID is the model path; I repeated the run with that exact served
+name.  This is why the two failed attempts have no result files and must not
+be interpreted as zero accuracy.
+
+The valid command used the upstream QA evaluator with the paper launcher
+settings (`max_length=32768`, `max_new_tokens=32`, 1,000 examples) and the
+same local model as sender and receiver.  The sender request is only a
+baseline control here; no cache is transferred, and the receiver independently
+prefills its complete prompt.  The output is stored at
+`results/reproduction/native_ministral3b_hotpotqa_1000_cap32_v3/`:
+
+```text
+Samples: 1000
+EM: 0.272
+F1: 0.380
+```
+
+The vLLM API request did not specify sampling parameters, matching the public
+evaluator.  With vLLM 0.18 this means the defaults `temperature=1.0` and
+`top_p=1.0`; therefore this is a stochastic quality reference, not a greedy
+reference.  The service had prefix caching enabled by default.  That can
+change latency (and is not a strict full-prefill latency baseline), but does
+not transfer the sender cache into the receiver request and does not change
+the quality protocol.  Any future TTFT comparison must rerun the native
+baseline with `--no-enable-prefix-caching` and record the same server flags.
+
+The tokenizer emitted the Transformers Mistral regex warning
+(`fix_mistral_regex=True` is recommended by the current tokenizer).  The
+evaluator uses the tokenizer only for local length filtering and the server
+tokenizes the actual prompt; all 1,000 HotpotQA records survive the 32,768
+limit.  This warning is still recorded as a runtime-version deviation and
+must be resolved or pinned before claiming bit-for-bit paper reproduction.
+
+This baseline is an independently verified receiver reference, not a MapFlow
+result.  The paper's MapFlow accuracy row remains unrun because its required
+sender/cache/receiver CUDA-IPC topology is blocked by the host's all-zero
+GPU peer-access matrix.
+
 ## 6. Accuracy experiments (paper test split)
 
 The official scripts use `examples/data/accuracy/*.jsonl`, max lengths and
@@ -420,6 +492,7 @@ hardware-dependent difference is reported with the raw logs and percentiles.
 - [x] BSR backend is selected (no fallback); CUDA-IPC registration is blocked by no P2P;
 - [x] same-device BSR functional gate reaches sender/cache/receiver registration and scores a short HotpotQA gate (explicitly hardware-deviation);
 - [x] BSR Triton kernel launch/compilation on a valid **same-device functional** MapFlow cache run (paper multi-GPU topology remains blocked by no P2P);
+- [x] native Ministral3-3B 1,000-example HotpotQA receiver baseline recorded (diagnostic; not a MapFlow paper row);
 - [ ] all four pair × accuracy datasets run with n=1,000 paper test examples;
 - [ ] RULER-20K file resolved and four long-context rows run;
 - [ ] TTFT and routing traces run and extracted;
