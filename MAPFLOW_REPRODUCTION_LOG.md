@@ -410,6 +410,6 @@ hardware-dependent difference is reported with the raw logs and percentiles.
 - [ ] RULER-20K file resolved and four long-context rows run;
 - [ ] TTFT and routing traces run and extracted;
 - [x] raw commands, runtime errors, deviations, and static audit are recorded;
-- [ ] branch pushed to `https://github.com/geekittime/mapflow`.
+- [x] branch pushed to `https://github.com/geekittime/mapflow` (`481a62b`).
 
 The checklist is intentionally left open until authoritative logs exist.
