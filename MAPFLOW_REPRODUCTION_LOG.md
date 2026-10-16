@@ -175,6 +175,13 @@ counts, but not the missing data/seed/checkpoint semantics:
 | Ministral3-8B→3B | 3,200 | 2,150 | 11,690 | 100 |
 | Ministral3-14B→8B | 3,800 | 9,150 | 3,460 | 10 |
 
+For example, the saved Ministral3-8B→3B conversation state is consistent with
+an AdamW-style optimizer (`initial_lr=0.01`, betas `(0.9,0.999)`, weight decay
+`1e-4`) and a scheduler at step 2,150; the Qwen3-8B→1.7B HotpotQA scheduler
+is at step 10,650.  These clues are useful for an audit, but they do not
+recover the unavailable training batches, loss implementation, random seed,
+or checkpoint-selection rule.
+
 The effective local evaluator distributions were also measured with the
 tokenizer and `max_length` values in the public launchers (length includes
 context, append, and answer tokens): HotpotQA `n=1000`, min/max/mean
