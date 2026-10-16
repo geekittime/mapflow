@@ -35,6 +35,12 @@ compression, retrieval, server, and vLLM integration algorithms were not
 edited.  The upstream README hash at import time was
 `79ec45f4c05c8fb962c7cfa7eb0705bab5c4c013e1110ebb8bbc349cbc06b2bc`.
 
+The endpoint was rechecked on 16 October 2026 through both urllib and curl:
+the public route returned `302` to `/api/repo/MapFlow-6341/file/`, followed by
+`401 {"error":"not_connected"}`; the guessed `/api/r/MapFlow-6341` route
+returned `404`.  No session or repository connection was available, so the
+authors' public mirror remains the only verifiable source used here.
+
 ## 2. Paper protocol extracted before running code
 
 The following facts were transcribed from the local PDF, rather than inferred
