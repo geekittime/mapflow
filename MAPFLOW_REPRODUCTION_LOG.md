@@ -199,10 +199,18 @@ Existing local model snapshots at the start of the run:
 /home/wby/models/Ministral-3-14B-Reasoning-2512
 ```
 
-Qwen3-1.7B was absent and must be downloaded to a separate model cache.  The
-model is never committed to git.  The launcher expects ignored symlinks under
-`examples/models/`; the exact links and checksums are printed by the run
-script before serving.
+Qwen3-1.7B is required for the Qwen3-8B → Qwen3-1.7B paper pair.  A local
+directory was found during the follow-up audit, but it was not a usable model:
+the first 3,441,185,608-byte shard was a sparse/corrupt placeholder
+(`safetensors.safe_open` failed with an EOF header error), and the second shard
+was initially absent.  The second shard has since been acquired and verified
+(`622,329,984` bytes; SHA256
+`912becff8d60672aa8628ef08c05898d9adf17c2ad4ae3caf99b065622fdeff9`).  The
+first shard is being reacquired from the official Qwen repository and the
+pair remains unchecked until both shards pass safetensors opening and the
+expected size/hash checks.  Model weights are never committed to git.  The
+launcher expects ignored symlinks under `examples/models/`; the exact links
+and checksums are printed by `reproduction/prepare_models.sh` before serving.
 
 Setup caveat: one early shell command resolved the bare `pip` executable to
 `/home/wby/miniconda3/bin/pip` instead of the copied environment and installed

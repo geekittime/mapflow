@@ -51,6 +51,8 @@ ln -sfn /home/wby/models/Ministral-3-8B-Reasoning-2512 examples/models/Ministral
 ln -sfn /home/wby/models/Ministral-3-14B-Reasoning-2512 examples/models/Ministral3-14B
 ```
 
-Qwen3-1.7B is required for the Qwen3-8B → Qwen3-1.7B paper pair and is not
-present in the pre-existing model directory; its acquisition and checksum
-are recorded in the main log before that pair is run.
+Qwen3-1.7B is required for the Qwen3-8B → Qwen3-1.7B paper pair.  Run
+`reproduction/prepare_models.sh` with the copied environment's Python; it
+validates every shard referenced by `model.safetensors.index.json` and refuses
+to link a directory containing missing or `.part` files.  Its acquisition and
+checksums are recorded in the main log before that pair is run.
