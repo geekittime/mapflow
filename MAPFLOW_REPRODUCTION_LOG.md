@@ -174,8 +174,11 @@ environment `/home/wby/.venvs/mapflow-repro312` (created from the existing
 environment rather than modifying it in place).  The source README requests
 Python 3.11,
 the modified vLLM package, `nvtx`, `sacrebleu`, and `rouge_score`, followed by
-NVIDIA MPS.  The imported vLLM metadata pins torch 2.10.0.  The machine has
-driver 535.183.01 (reported CUDA 12.2) and eight RTX 4090 24GB cards, whereas
+NVIDIA MPS.  The copied runtime actually uses Python 3.12.3, vLLM 0.18.0,
+torch 2.10.0+cu126, Triton 3.4.0, and Transformers 4.57.6.  This is a
+runtime compatibility choice rather than the README's Python 3.11
+environment.  The machine has driver 535.183.01 (reported CUDA 12.2) and
+eight RTX 4090 24GB cards, whereas
 the paper uses eight A800 80GB cards.  The driver/CUDA compatibility and BSR
 Triton compilation are explicit gates; a server that starts with a fallback
 attention backend is **not** accepted as a MapFlow run.
