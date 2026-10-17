@@ -507,3 +507,47 @@ hardware-dependent difference is reported with the raw logs and percentiles.
 - [x] branch pushed to `https://github.com/geekittime/mapflow` (latest audit commit `17a3551`).
 
 The checklist is intentionally left open until authoritative logs exist.
+
+## 9. Accuracy-only feasibility audit on the current server (2026-10-17)
+
+The question whether TTFT can simply be omitted while retaining a faithful
+accuracy reproduction was checked separately.  Omitting TTFT measurements does
+not remove MapFlow's CUDA-IPC requirement: the public accuracy launcher still
+starts a sender, a cache server, and a receiver, and the cache server exports
+GPU-resident BSR blocks to the receiver through CUDA IPC.
+
+Current host probe:
+
+```text
+8 x NVIDIA GeForce RTX 4090, 24,564 MiB each
+torch 2.10.0+cu126, CUDA runtime 12.6
+torch.cuda.can_device_access_peer(i, j) = False for every i != j
+```
+
+The distinct-GPU MapFlow registration was already attempted with the paper's
+Ministral3-8B -> Ministral3-3B pair.  It selected `BSR_ATTN`, then failed at
+CUDA-IPC registration with `CUDA error: peer access is not supported between
+these two devices`, before a receiver request could be scored.  Therefore this
+machine cannot run the unmodified paper topology, even if TTFT is not measured.
+
+The model-artifact gate also currently fails Qwen3-1.7B: its first
+`model-00001-of-00002.safetensors` shard is missing and the retained
+`.corrupt` placeholder fails `safetensors.safe_open`.  The other five local
+snapshots pass the shard/config audit.  Consequently the Qwen3-8B -> 1.7B
+pair is not runnable until that shard is acquired and verified.
+
+What is possible on this host is explicitly limited:
+
+* A same-device functional run can exercise the BSR kernel and produce a
+  diagnostic score, but it is not the paper's separate-GPU/A800 experiment.
+* A newly implemented CPU/host-staging transport could preserve the attention
+  values for an accuracy-only experiment, but it would be a transport
+  deviation and must be reported separately; it is not supplied by the
+  public implementation.
+* A strict four-pair reproduction requires a P2P/CUDA-IPC-capable host (the
+  paper used 8 x A800 80GB) plus a verified Qwen3-1.7B snapshot.
+
+Thus the current server supports source/static validation and hardware-
+deviation diagnostics, but it does **not** support claiming the paper's full
+accuracy table with the unmodified implementation.  Missing accuracy rows
+remain `NOT RUN`, never zero.
