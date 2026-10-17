@@ -1,5 +1,6 @@
 import traceback
 import os
+import json
 import torch
 import torch.multiprocessing as mp
 from multiprocessing.connection import Connection
@@ -417,6 +418,21 @@ class ClientReceiver:
     def _should_ignore_layer(self, layer_idx: int) -> bool:
         return layer_idx < self.num_ignored_layers or layer_idx == self.num_layers - 1
 
+    def _audit_prefill(self, layer_idx, reused, nnz):
+        path = os.environ.get("MAPFLOW_AUDIT_FILE")
+        if not path:
+            return
+        # Accuracy audit only: completion evidence, never used in TTFT runs.
+        torch.cuda.synchronize()
+        record = {"iteration": self.iteration, "layer": layer_idx,
+                  "sender_layer": self.recv_to_send_layer_idx[layer_idx],
+                  "reused": bool(reused), "kernel_completed": True, "nnz": int(nnz),
+                  "hit_tokens": self.client_batch_state.num_hit_tokens,
+                  "miss_tokens": self.client_batch_state.num_miss_tokens,
+                  "requests": self.client_batch_state.current_batch_layout}
+        with open(path, "a") as f:
+            f.write(json.dumps(record) + "\n")
+
     def print_hit_miss_status(self) -> None:
         """
         Print the hit and miss intervals for each request in the current batch.
@@ -653,6 +669,7 @@ class ClientReceiver:
             #     num_splits=num_splits,
             #     s_aux=s_aux,
             # )
+            self._audit_prefill(layer_idx, False, nnz)
             return
 
         if self.client_batch_state.num_miss_tokens > 0:
@@ -680,7 +697,10 @@ class ClientReceiver:
                 window_size=window_size,
                 block_table=self.flash_attn_block_table,
                 softcap=softcap,
-                scheduler_metadata=scheduler_metadata,
+                # This call is a newly packed miss-only batch. The full-batch
+                # FA3 schedule has incompatible dimensions (and potentially
+                # wrong offsets); let FA3 derive a schedule for these segments.
+                scheduler_metadata=None,
                 fa_version=fa_version,
                 q_descale=q_descale,
                 k_descale=k_descale,
@@ -740,3 +760,4 @@ class ClientReceiver:
                     output=out,
                     density=density,
                 )
+            self._audit_prefill(layer_idx, True, nnz)

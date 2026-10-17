@@ -1,0 +1,12 @@
+{
+  "complete": true,
+  "protocol_sha256": "277e46dafc7e500dcf6ca90b31cd95f51fec5772a5406663ba6a228525d39c0d",
+  "predictions_sha256": "3c111d15d3a683f0be62c37989f59d4f0a3f483420662c39a842462e76ff9875",
+  "n": 1000,
+  "em": 0.276,
+  "f1": 0.37280494731875535,
+  "official_answer_f1": 0.37280494731875535,
+  "length_stops": 8,
+  "with_reuse": 0,
+  "zero_shared_blocks": 1
+}

@@ -17,6 +17,7 @@ for rel in \
   vllm/v1/attention/selector.py \
   vllm/v1/attention/backends/registry.py \
   vllm/v1/attention/backends/bsr_attn.py \
+  vllm/v1/attention/backends/flash_attn.py \
   vllm/v1/attention/backends/flex_prefill_kernel.py \
   vllm/v1/core/kv_cache_manager.py \
   vllm/v1/core/sched/scheduler.py \

@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "pair": "Qwen3-8B_to_Qwen3-1.7B",
+      "max_split_k": 1,
+      "relative_rms": 0.006698570214211941,
+      "max_error": 0.029544353485107422,
+      "passed": true
+    },
+    {
+      "pair": "Qwen3-8B_to_Qwen3-1.7B",
+      "max_split_k": 32,
+      "relative_rms": 0.002804386429488659,
+      "max_error": 0.017144203186035156,
+      "passed": true
+    },
+    {
+      "pair": "Qwen3-14B_to_Qwen3-8B",
+      "max_split_k": 1,
+      "relative_rms": 0.008923417888581753,
+      "max_error": 0.06525897979736328,
+      "passed": true
+    },
+    {
+      "pair": "Qwen3-14B_to_Qwen3-8B",
+      "max_split_k": 32,
+      "relative_rms": 0.003728995332494378,
+      "max_error": 0.028101205825805664,
+      "passed": true
+    }
+  ]
+}

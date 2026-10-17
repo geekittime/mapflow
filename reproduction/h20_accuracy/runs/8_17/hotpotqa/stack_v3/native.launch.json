@@ -1,0 +1,43 @@
+{
+  "pid": 131964,
+  "role": "native",
+  "pair": "8_17",
+  "task": "hotpotqa",
+  "command": [
+    "/home/tiger/mapflow/.venv/bin/python",
+    "-m",
+    "vllm.entrypoints.openai.api_server",
+    "--model",
+    "/home/tiger/mapflow/examples/models/Qwen3-1.7B",
+    "--served-model-name",
+    "Qwen3-1.7B",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "7003",
+    "--enforce-eager",
+    "--no-async-scheduling",
+    "--disable-log-stats",
+    "--tensor-parallel-size",
+    "1",
+    "--max-model-len",
+    "40960",
+    "--gpu-memory-utilization",
+    "0.5",
+    "--max-num-batched-tokens",
+    "4116",
+    "--no-enable-prefix-caching"
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "0",
+    "PYTHONPATH": "/home/tiger/mapflow",
+    "PYTHONUNBUFFERED": "1",
+    "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+    "OMP_NUM_THREADS": "4",
+    "VLLM_ATTENTION_BACKEND": "FLASH_ATTN"
+  },
+  "attention_top_p": 0.7,
+  "mps": false,
+  "notes": "Accuracy only; no MPS thread limits; default author cache capacities.",
+  "launcher_sha256": "ecdadd77f7e057d90f71c50ed2e37a42d733f4c5cadb657b59090c7c6ffaf524"
+}

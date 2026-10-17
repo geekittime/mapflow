@@ -1,0 +1,40 @@
+{
+  "pid": 131936,
+  "role": "server",
+  "pair": "8_17",
+  "task": "hotpotqa",
+  "command": [
+    "/home/tiger/mapflow/.venv/bin/python",
+    "-m",
+    "mapflow.server.server",
+    "--num_sender_layers",
+    "36",
+    "--num_ignored_layers",
+    "11",
+    "--num_sender_heads",
+    "32",
+    "--tp_size",
+    "1",
+    "--block_size",
+    "64",
+    "--max_num_reqs",
+    "128",
+    "--dtype",
+    "bfloat16",
+    "--port",
+    "7000"
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "0,1",
+    "PYTHONPATH": "/home/tiger/mapflow",
+    "PYTHONUNBUFFERED": "1",
+    "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+    "OMP_NUM_THREADS": "4",
+    "VLLM_ATTENTION_BACKEND": "BSR_ATTN",
+    "BLOCK_CACHE_POLICY": "FIFO"
+  },
+  "attention_top_p": 0.7,
+  "mps": false,
+  "notes": "Accuracy only; no MPS thread limits; default author cache capacities.",
+  "launcher_sha256": "ecdadd77f7e057d90f71c50ed2e37a42d733f4c5cadb657b59090c7c6ffaf524"
+}

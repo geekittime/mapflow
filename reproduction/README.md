@@ -1,5 +1,8 @@
 # MapFlow reproduction harness
 
+Current H20 accuracy work: [`h20_accuracy/PROCESS.md`](h20_accuracy/PROCESS.md).
+The commands and RTX 4090 limitations below describe the earlier host, not the current H20 runs.
+
 This directory contains the audit and launcher files used for the MapFlow
 reproduction.  The implementation under `../mapflow/`, the modified vLLM
 under `../vllm/`, the paper-provided calibration weights under

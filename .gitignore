@@ -139,6 +139,10 @@ celerybeat.pid
 .env
 .venv
 .tmp/
+reproduction/h20_accuracy/prepared/
+reproduction/h20_accuracy/runs/**/predictions.jsonl
+reproduction/h20_accuracy/runs/**/reuse_events.jsonl
+reproduction/h20_accuracy/runs/**/job.lock
 env/
 venv/
 ENV/

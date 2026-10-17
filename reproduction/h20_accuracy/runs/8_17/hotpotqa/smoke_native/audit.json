@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "n": 3,
+  "checks": [
+    "exact sample coverage",
+    "data manifest",
+    "reference identity",
+    "prompt token counts",
+    "prediction rescore",
+    "per-request reuse layers"
+  ],
+  "result": {
+    "complete": true,
+    "protocol_sha256": "10713700912d6b7b1aad605dbfe961a7e84af1b99ca7f26ef013ada1b2b45ff8",
+    "predictions_sha256": "6b3da86246ca9f70b89c670a4e0c0b496d29fb7d4a504b5805b7dce03064cbab",
+    "n": 3,
+    "em": 0.6666666666666666,
+    "f1": 0.7407407407407408,
+    "official_answer_f1": 0.7407407407407408,
+    "length_stops": 0,
+    "with_reuse": 0,
+    "zero_shared_blocks": 0
+  }
+}
