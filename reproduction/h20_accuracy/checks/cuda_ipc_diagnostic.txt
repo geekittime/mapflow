@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/tiger/mapflow/reproduction/h20_accuracy/check_cuda_ipc.py", line 69, in <module>
+    else: send(sys.argv[2])
+          ^^^^^^^^^^^^^^^^^
+  File "/home/tiger/mapflow/reproduction/h20_accuracy/check_cuda_ipc.py", line 47, in send
+    raise RuntimeError(f'receiver exit={child.returncode}, stderr={child.stderr.decode()}')
+RuntimeError: receiver exit=-11, stderr=IPC receiver: reconstruct
+
+[W1017 09:34:24.297749374 CudaIPCTypes.cpp:16] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]

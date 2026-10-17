@@ -71,6 +71,8 @@ def write(path: str, text: str):
 
 async def main_async():
     p = argparse.ArgumentParser()
+    p.add_argument("--dataset", choices=["conversation", "multinews"], default=None,
+                   help="Dataset type; omitted only for legacy filename inference")
     p.add_argument("--eval_data", required=True)
     p.add_argument("--num_max_examples", type=int, default=-1)
     p.add_argument("--max_length", type=int, default=10240)
@@ -97,7 +99,7 @@ async def main_async():
     tokenizer = AutoTokenizer.from_pretrained(args.send_model)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    dataset_name = "multinews" if "multinews" in args.eval_data.lower() else "conversation"
+    dataset_name = args.dataset or ("multinews" if "multinews" in args.eval_data.lower() else "conversation")
     dataset = get_dataset(
         dataset_name, args.eval_data, tokenizer,
         max_length=args.max_length, num_max_examples=args.num_max_examples,

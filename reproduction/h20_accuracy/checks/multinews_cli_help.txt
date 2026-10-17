@@ -1,0 +1,32 @@
+usage: inference_conversation_batch.py [-h]
+                                       [--dataset {conversation,multinews}]
+                                       --eval_data EVAL_DATA
+                                       [--num_max_examples NUM_MAX_EXAMPLES]
+                                       [--max_length MAX_LENGTH] --send_model
+                                       SEND_MODEL --receive_model
+                                       RECEIVE_MODEL
+                                       [--send_model_port SEND_MODEL_PORT]
+                                       [--recv_model_port RECV_MODEL_PORT]
+                                       [--max_new_tokens MAX_NEW_TOKENS]
+                                       [--batch_size BATCH_SIZE]
+                                       [--window_size WINDOW_SIZE] --log_file
+                                       LOG_FILE --result_file RESULT_FILE
+
+options:
+  -h, --help            show this help message and exit
+  --dataset {conversation,multinews}
+                        Dataset type; omitted only for legacy filename
+                        inference
+  --eval_data EVAL_DATA
+  --num_max_examples NUM_MAX_EXAMPLES
+  --max_length MAX_LENGTH
+  --send_model SEND_MODEL
+  --receive_model RECEIVE_MODEL
+  --send_model_port SEND_MODEL_PORT
+  --recv_model_port RECV_MODEL_PORT
+  --max_new_tokens MAX_NEW_TOKENS
+  --batch_size BATCH_SIZE
+  --window_size WINDOW_SIZE
+                        retained for upstream CLI compatibility
+  --log_file LOG_FILE
+  --result_file RESULT_FILE

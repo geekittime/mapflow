@@ -18,8 +18,11 @@ class CudaIPCWrapper:
     def to_tensor(self, device_idx=None):
         if device_idx is None:
             device_idx = self.device_idx
-        storage = torch.UntypedStorage._new_shared_cuda(device_idx, *self.handle[1:])
+        # Initialize CUDA through the public tensor API before entering the
+        # private IPC storage API. Fresh spawn workers can otherwise segfault
+        # in _new_shared_cuda before Python can raise an exception.
         t = torch.empty((0,), device=f"cuda:{device_idx}", dtype=self.dtype)
+        storage = torch.UntypedStorage._new_shared_cuda(device_idx, *self.handle[1:])
         t.set_(storage, storage_offset=self.offset, size=self.shape)
         return t
 

@@ -1,0 +1,5 @@
+p=0.70 kept_blocks=10/20 retained_mass=0.72424017
+p=0.80 kept_blocks=12/20 retained_mass=0.80275037
+p=0.90 kept_blocks=15/20 retained_mass=0.90584762
+p=0.92 kept_blocks=16/20 retained_mass=0.93099289
+SPARSE_REFERENCE_MATH PASS

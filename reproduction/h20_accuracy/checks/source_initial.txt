@@ -1,0 +1,33 @@
+ROOT /home/tiger/mapflow
+GIT /home/tiger/mapflow
+COMMIT 2c6e49af82f75f8e04cebe802401df145df624cc
+SOURCE_EXPECTED_COMMIT ab1dc50ea811a8a50c0beb64964cdf963956eb32
+DATASET hotpotqa rows=1000 sha256=2da0655e0177a4a1622fdee481e7a972b4c93f70be3eefd40ea5a905075245c3 path=examples/data/accuracy/hotpotqa_1000.jsonl
+DATASET conversation rows=100 sha256=289ed137b0d0af664d6f58ef124763317f339ceb90de47cca99452a9539e7b4d path=examples/data/accuracy/conversation_1000.jsonl
+DATASET multinews rows=5622 sha256=7338c63f8eaa875b2cfb2e38d1c0fb9e0202fd5f5cb765cab05f68b8aadcfd54 path=examples/data/accuracy/multinews_1000.jsonl
+DATASET rulerqa rows=100 sha256=efcabced9b2a999bc9ab868f91210a37d6ea571909ccfe27c2e5f98f5528767c path=examples/data/accuracy/rulerqa_100.jsonl
+PAIR Qwen3-8B_to_Qwen3-1.7B sender_layers=36 receiver_layers=28 sender_heads=32 receiver_heads=16 suffix_offset=8
+  WEIGHTS task=hotpotqa files=25 runtime_reuse_layers=24 shapes=['(32, 16)']
+  WEIGHTS task=conversation files=25 runtime_reuse_layers=24 shapes=['(32, 16)']
+  WEIGHTS task=multinews files=25 runtime_reuse_layers=24 shapes=['(32, 16)']
+  WEIGHTS task=rulerqa files=25 runtime_reuse_layers=24 shapes=['(32, 16)']
+PAIR Qwen3-14B_to_Qwen3-8B sender_layers=40 receiver_layers=36 sender_heads=40 receiver_heads=32 suffix_offset=4
+  WEIGHTS task=hotpotqa files=33 runtime_reuse_layers=32 shapes=['(40, 32)']
+  WEIGHTS task=conversation files=33 runtime_reuse_layers=32 shapes=['(40, 32)']
+  WEIGHTS task=multinews files=33 runtime_reuse_layers=32 shapes=['(40, 32)']
+  WEIGHTS task=rulerqa files=33 runtime_reuse_layers=32 shapes=['(40, 32)']
+PAIR Ministral3-8B_to_Ministral3-3B sender_layers=34 receiver_layers=26 sender_heads=32 receiver_heads=32 suffix_offset=8
+  WEIGHTS task=hotpotqa files=23 runtime_reuse_layers=22 shapes=['(32, 32)']
+  WEIGHTS task=conversation files=23 runtime_reuse_layers=22 shapes=['(32, 32)']
+  WEIGHTS task=multinews files=23 runtime_reuse_layers=22 shapes=['(32, 32)']
+  WEIGHTS task=rulerqa files=23 runtime_reuse_layers=22 shapes=['(32, 32)']
+PAIR Ministral3-14B_to_Ministral3-8B sender_layers=40 receiver_layers=34 sender_heads=32 receiver_heads=32 suffix_offset=6
+  WEIGHTS task=hotpotqa files=31 runtime_reuse_layers=30 shapes=['(32, 32)']
+  WEIGHTS task=conversation files=31 runtime_reuse_layers=30 shapes=['(32, 32)']
+  WEIGHTS task=multinews files=31 runtime_reuse_layers=30 shapes=['(32, 32)']
+  WEIGHTS task=rulerqa files=31 runtime_reuse_layers=30 shapes=['(32, 32)']
+IMPLEMENTATION_ANCHOR simplex normalization=True
+IMPLEMENTATION_ANCHOR BSR backend=True
+IMPLEMENTATION_ANCHOR top-p=True
+IMPLEMENTATION_ANCHOR prefix hash=True
+STATIC_AUDIT PASS

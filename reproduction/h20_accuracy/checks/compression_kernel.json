@@ -1,0 +1,89 @@
+{
+  "torch": "2.10.0+cu128",
+  "cuda": "12.8",
+  "device": "NVIDIA H20",
+  "cases": [
+    {
+      "tokens": 256,
+      "query_tokens": 256,
+      "top_p": 0.7,
+      "selected_blocks": 63,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.001825869083404541,
+      "passed": true
+    },
+    {
+      "tokens": 256,
+      "query_tokens": 256,
+      "top_p": 0.87,
+      "selected_blocks": 80,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.001825869083404541,
+      "passed": true
+    },
+    {
+      "tokens": 256,
+      "query_tokens": 256,
+      "top_p": 0.92,
+      "selected_blocks": 80,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.001825869083404541,
+      "passed": true
+    },
+    {
+      "tokens": 256,
+      "query_tokens": 128,
+      "top_p": 0.7,
+      "selected_blocks": 40,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.0004651695489883423,
+      "passed": true
+    },
+    {
+      "tokens": 256,
+      "query_tokens": 128,
+      "top_p": 0.87,
+      "selected_blocks": 56,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.0004860013723373413,
+      "passed": true
+    },
+    {
+      "tokens": 256,
+      "query_tokens": 128,
+      "top_p": 0.92,
+      "selected_blocks": 56,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.0004860013723373413,
+      "passed": true
+    },
+    {
+      "tokens": 1024,
+      "query_tokens": 256,
+      "top_p": 0.7,
+      "selected_blocks": 328,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.00020323693752288818,
+      "passed": true
+    },
+    {
+      "tokens": 1024,
+      "query_tokens": 256,
+      "top_p": 0.87,
+      "selected_blocks": 400,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.00024215877056121826,
+      "passed": true
+    },
+    {
+      "tokens": 1024,
+      "query_tokens": 256,
+      "top_p": 0.92,
+      "selected_blocks": 432,
+      "max_lse_error": 9.5367431640625e-07,
+      "max_probability_error": 0.00024215877056121826,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

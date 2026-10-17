@@ -1,0 +1,4 @@
+{"source": "0", "destination": "1", "passed": true, "child": {"read_passed": true, "write_passed": true, "visible": "1"}, "torch": "2.10.0+cu128"}
+{"source": "1", "destination": "2", "passed": true, "child": {"read_passed": true, "write_passed": true, "visible": "2"}, "torch": "2.10.0+cu128"}
+{"source": "2", "destination": "3", "passed": true, "child": {"read_passed": true, "write_passed": true, "visible": "3"}, "torch": "2.10.0+cu128"}
+{"source": "3", "destination": "0", "passed": true, "child": {"read_passed": true, "write_passed": true, "visible": "0"}, "torch": "2.10.0+cu128"}
